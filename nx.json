@@ -1,5 +1,5 @@
 {
-  "npmScope": "smart-farm-prediction",
+  "npmScope": "smart-farm-application",
   "affected": {
     "defaultBase": "master"
   },

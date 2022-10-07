@@ -21,7 +21,7 @@
           "error",
           {
             "type": "element",
-            "prefix": "smart-farm-prediction",
+            "prefix": "smart-farm-application",
             "style": "kebab-case"
           }
         ]

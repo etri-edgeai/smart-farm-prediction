@@ -104,7 +104,7 @@
       "projectType": "application",
       "root": "apps/edge-mon",
       "sourceRoot": "apps/edge-mon/src",
-      "prefix": "smart-farm-prediction",
+      "prefix": "smart-farm-application",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",

@@ -4,7 +4,7 @@ import { InternalDto } from '@libs/models/sensor';
 import { MatTableDataSource } from '@angular/material/table';
 
 @Component({
-  selector: 'smart-farm-prediction-root',
+  selector: 'smart-farm-application-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })

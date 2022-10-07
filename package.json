@@ -1,5 +1,5 @@
 {
-  "name": "smart-farm-prediction",
+  "name": "smart-farm-application",
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
@@ -51,7 +51,6 @@
     "source-map-support": "^0.5.20",
     "swagger-ui-express": "^4.1.6",
     "tslib": "^2.0.0",
-    "typeorm": "^0.2.38",
     "zone.js": "0.11.5"
   },
   "devDependencies": {
