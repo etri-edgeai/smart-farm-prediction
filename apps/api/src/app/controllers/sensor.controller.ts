@@ -1,39 +1,20 @@
-import { Body, Controller,Inject,Param, Post } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
-import { timeout } from 'rxjs/operators';
-import { HttpService } from '@nestjs/axios';
+import { Controller, Post, Req, UseInterceptors } from '@nestjs/common';
+import { MakeJsonResponseInterceptor } from './../interceptors/make-json-response.interceptor';
+import { SensorService } from './sensor.service';
 
-import { SensorRequest } from '@libs/models/sensor';
-import { getLogger } from "log4js";
-import { ConfigService } from '@nestjs/config';
-
-@Controller('connfarm/api/device')
+@UseInterceptors(MakeJsonResponseInterceptor)
+@Controller()
 export class SensorController {
-  sendToSensor = false;
+  constructor(private sensorService: SensorService) { }
 
-  private readonly logger = getLogger();
-  constructor(@Inject('REDIS') private redis: ClientProxy, private httpService: HttpService, private config: ConfigService) {
-    this.sendToSensor = config.get("API_SEND_SENSOR", false) == 'true';
+  @Post('connfarm/api/device/:idx/sensor/:type.json')
+  oldSensor(@Req() req) {
+    return this.sensorService.addToQueue(req, false);
   }
 
-  /**
-   * Sensing data from gateway
-   */
-  @Post(':idx/sensor/:type.json')
-  handleSensorData(@Param('idx') idx: string, @Param('type') type: string, @Body() body) {
-    const sensorData = new SensorRequest();
-    sensorData.idx = idx;
-    sensorData.type = type;
-    sensorData.data = body[Object.keys(body)[0]];
-    this.logger.debug(`${idx} ${type} ${JSON.stringify(body)}`);
-
-    // for development
-    if (this.sendToSensor) {
-      this.logger.debug("send copied sensor data to edge")
-      const url = `http://192.168.0.188:8080/connfarm/api/device/${idx}/sensor/${type}.json`;
-      this.httpService.post(url, body).pipe(timeout(500)).subscribe();
-    }
-
-    return this.redis.send('sensor', sensorData).pipe(timeout(3000));
+  @Post('device/sensing')
+  sensing(@Req() req) {
+    
+    return this.sensorService.addToQueue(req);
   }
 }

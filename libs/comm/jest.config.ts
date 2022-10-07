@@ -1,5 +1,5 @@
 export default {
-  displayName: 'api',
+  displayName: 'comm',
 
   globals: {
     'ts-jest': {
@@ -8,9 +8,9 @@ export default {
   },
   testEnvironment: 'node',
   transform: {
-    '^.+\\.[tj]s$': 'ts-jest',
+    '^.+\\.[tj]sx?$': 'ts-jest',
   },
-  moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../coverage/apps/api',
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
+  coverageDirectory: '../../coverage/libs/comm',
   preset: '../../jest.preset.js',
 };

@@ -1,50 +1,37 @@
 import { Module, NestModule, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
-import { ClientProxyFactory, Transport } from '@nestjs/microservices';
-// import { ServeStaticModule } from '@nestjs/serve-static';
-import { CommonConfigModule } from '@libs/config';
-import { AppService } from './app.service';
+import { HttpModule } from '@nestjs/axios';
+import { BullModule } from '@nestjs/bull';
+import { CommonConfigModule, CommonConfigService } from '@libs/config';
+import { CommModule } from '@libs/comm';
 import { AppController } from './app.controller';
 import { SensorController } from './controllers/sensor.controller';
-import { ConfigService } from '@nestjs/config';
-import { FrontendMiddleware } from './middlewares/frontend.middleware';
-import { HttpModule } from '@nestjs/axios';
-//import { join } from 'path';
+import { EdgeMonMiddleware } from './middlewares/edge-mon.middleware';
+import { SensorService } from './controllers/sensor.service';
 
 @Module({
   imports: [
-    /*
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, 'assets')
-    }),
-    */
     HttpModule,
+    BullModule.forRootAsync({
+      useFactory: (config: CommonConfigService) => ({ redis: config.redis, defaultJobOptions: {
+        removeOnComplete: true, removeOnFail: true, timeout: 12 * 60 * 60 * 1000
+      }}),
+      inject: [CommonConfigService]
+    }),
+    BullModule.registerQueue({
+      name: 'sensor'
+    }),
     CommonConfigModule,
-    ConfigService
+    CommModule.forSend()
   ],
   controllers: [AppController, SensorController],
-  providers: [AppService,
-    {
-      provide: 'REDIS',
-      useFactory: (configService: ConfigService) => {
-        return ClientProxyFactory.create({
-          transport: Transport.REDIS,
-          options: {
-            url: 'redis://localhost:' + configService.get<number>('REDIS_PORT'),
-          }
-        });
-      },
-      inject: [ConfigService]
-    }
-  ]
+  providers: [SensorService]
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): void {
-    consumer.apply(FrontendMiddleware).forRoutes(
-      {
-        path: '/**', // For all routes
-        method: RequestMethod.ALL, // For all methods
-      },
+    consumer.apply(EdgeMonMiddleware).forRoutes(
+      // For all edge-mon routes
+      { path: '/edge', method: RequestMethod.GET }, 
+      { path: '/edge/**', method: RequestMethod.ALL },
     );
   }
-
 }

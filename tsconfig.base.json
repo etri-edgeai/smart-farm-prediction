@@ -14,13 +14,15 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "strictPropertyInitialization": false,
-    "baseUrl": ".",
+    "baseUrl": "libs",
     "paths": {
-      "@libs/config": ["libs/config/src/index.ts"],
-      "@libs/db": ["libs/db/src/index.ts"],
-      "@libs/db/*": ["libs/db/src/*"],
-      "@libs/models": ["libs/models/src/index.ts"],
-      "@libs/models/*": ["libs/models/src/*/index.ts"]
+      "@libs/comm": ["comm/src/index.ts"],
+      "@libs/config": ["config/src/index.ts"],
+      "@libs/db": ["db/src/index.ts"],
+      "@libs/db/*": ["db/src/*"],
+      "@libs/models": ["models/src/index.ts"],
+      "@libs/models/*": ["models/src/*/index.ts"],
+      "@libs/utils": ["utils/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

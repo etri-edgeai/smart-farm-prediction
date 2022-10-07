@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CommonConfigModule } from '@libs/config';
 
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 
 describe('AppController', () => {
   let app: TestingModule;
@@ -12,14 +11,13 @@ describe('AppController', () => {
   };
 
   const appServiceProvider = {
-    provide: AppService,
     useValue: mockAppService,
   };
 
   beforeAll(async () => {
     app = await Test.createTestingModule({
       controllers: [AppController],
-      providers: [appServiceProvider],
+      providers: [],
     }).compile();
   });
 

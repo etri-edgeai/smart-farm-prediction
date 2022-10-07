@@ -1,43 +1,47 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { LoggerService, LogLevel } from "@nestjs/common";
+import { Logger, LoggerService, LogLevel } from "@nestjs/common";
 import { configure, getLogger } from "log4js";
-import 'source-map-support/register';
 import * as path from 'path';
+import 'source-map-support/register';
+import { CommonConfigService } from ".";
 
 export class LogWrapper implements LoggerService {
-  private readonly logger = getLogger();
+  private static readonly logger = getLogger();
 
-  constructor(moduleName: string) {
-    this.logger.setParseCallStackFunction(this.parseCallStack);
-    const level = 'info';
-    this.setLog4jOption(moduleName, level);
+  constructor(moduleName?: string) {
+    LogWrapper.logger.setParseCallStackFunction(this.parseCallStack);
+    const fileName = path.join(CommonConfigService.getRoot(), "logs", (moduleName || CommonConfigService.getAppName()) + ".log");
+    this.setLog4jOption(fileName, 'info'); // default loglevel
   }
 
   log(message: any, ...optionalParams: any[]) {
-    this.logger.info(message);
+    LogWrapper.logger.info(message);
+  }
+  info(message: any, ...optionalParams: any[]) {
+    LogWrapper.logger.info(message);
   }
   error(message: any, ...optionalParams: any[]) {
-    this.logger.error(message);
+    LogWrapper.logger.error(message, ...optionalParams);
   }
   warn(message: any, ...optionalParams: any[]) {
-    this.logger.warn(message);
+    LogWrapper.logger.warn(message);
   }
   debug?(message: any, ...optionalParams: any[]) {
-    this.logger.debug(message);
+    LogWrapper.logger.debug(message);
   }
   verbose?(message: any, ...optionalParams: any[]) {
-    this.logger.trace(message);
+    LogWrapper.logger.trace(message);
   }
   setLogLevels?(levels: LogLevel[]) {
-    return;
+    //
   }
 
-  setLogLevel(level: string) {
-    this.logger.level = level;
+  static setLogLevel(level: string) {
+    LogWrapper.logger.level = level;
+    Logger.log("Log level: " + LogWrapper.logger.level);
   }
 
-  setLog4jOption(moduleName: string, level: string) {
-    const fileName = path.join(__dirname, "..", "logs", moduleName + ".log");
+  setLog4jOption(fileName: string, level: string) {
     const filePattern = '%d{yyyy-MM-dd hh:mm:ss.SSS} %-5p [%f{2}:%l] %m';
     const outPattern = '%d{yyyy-MM-dd hh:mm:ss.SSS} %[%-5p%] [%f{2}:%l] %m';
     configure({
